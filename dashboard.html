@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PPL Tech Academy | Learning Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --navy: #0D2545;
+      --navy-dark: #071428;
+      --blue: #1565C0;
+      --blue-mid: #1E88E5;
+      --cyan: #00C4D4;
+      --teal: #00897B;
+      --green: #2E9E5B;
+      --green-light: #43A047;
+      --mint: #26C6DA;
+      --purple: #3949AB;
+      --bg: #EAF0F8;
+      --card: #FFFFFF;
+      --text: #0D2545;
+      --text-light: #5A7490;
+      --border: #CDDAEB;
+      --shadow: 0 2px 8px rgba(7,20,40,0.09);
+      --shadow-hover: 0 6px 20px rgba(7,20,40,0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+      color: white; padding: 22px 32px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .header-brand { display: flex; align-items: center; gap: 16px; }
+    .header-logo {
+      width: 50px; height: 50px; background: var(--cyan); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white; letter-spacing: -1px; flex-shrink: 0;
+    }
+    .header-title h1 { font-size: 21px; font-weight: 700; }
+    .header-title h1 span { color: var(--cyan); }
+    .header-title p { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+    .live-badge {
+      display: inline-block; background: var(--teal); color: white;
+      font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px;
+    }
+    .header-meta { text-align: right; font-size: 12px; color: rgba(255,255,255,0.55); }
+    .header-meta strong { color: white; }
+
+    /* FILTER BAR */
+    .filter-bar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 10px 32px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .filter-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.6px; }
+    .preset-btn {
+      padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: white; font-size: 12px; font-weight: 600; color: var(--text-light);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .preset-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .preset-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+    .vdiv { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+    .filter-custom { display: flex; align-items: center; gap: 7px; }
+    .filter-custom input[type="month"] {
+      padding: 4px 9px; border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: 12px; color: var(--text); outline: none; background: white;
+    }
+    .filter-custom input[type="month"]:focus { border-color: var(--blue); }
+    .filter-custom span { font-size: 12px; color: var(--text-light); }
+    .apply-btn {
+      padding: 5px 13px; background: var(--blue); color: white;
+      border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .apply-btn:hover { background: #0d47a1; }
+    .data-stamp { margin-left: auto; font-size: 11px; color: var(--text-light); }
+
+    /* MAIN */
+    .main { padding: 24px 32px; max-width: 1440px; margin: 0 auto; }
+
+    /* PHASE SECTIONS */
+    .phase-section { margin-bottom: 40px; }
+    .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .phase-badge {
+      padding: 4px 13px; border-radius: 4px; font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.8px; color: white; flex-shrink: 0;
+    }
+    .p1 { background: var(--blue); }
+    .p2 { background: var(--purple); }
+    .p3 { background: var(--teal); }
+    .ps { background: var(--text-light); }
+    .phase-titles .phase-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .phase-titles .phase-sub { font-size: 12px; color: var(--text-light); margin-top: 1px; }
+    .phase-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* KPI ROW */
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .kpi-card {
+      background: var(--card); border-radius: 10px; padding: 16px 18px;
+      box-shadow: var(--shadow); border-left: 4px solid var(--blue);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+    .kpi-card.c-orange { border-left-color: var(--cyan); }
+    .kpi-card.c-teal   { border-left-color: var(--teal); }
+    .kpi-card.c-green  { border-left-color: var(--green); }
+    .kpi-card.c-navy   { border-left-color: var(--navy); }
+    .kpi-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-light); margin-bottom: 6px; }
+    .kpi-value { font-size: 30px; font-weight: 800; color: var(--navy); line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .kpi-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 600; margin-top: 8px;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .pill-green { background: rgba(46,158,91,0.13); color: var(--green); }
+    .pill-warn  { background: rgba(0,196,212,0.13); color: #007f8a; }
+
+    /* CHART GRID */
+    .chart-grid { display: grid; gap: 16px; margin-bottom: 16px; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    .g3 { grid-template-columns: 1fr 1fr 1fr; }
+    .g21 { grid-template-columns: 2fr 1fr; }
+    .g12 { grid-template-columns: 1fr 2fr; }
+    .span2 { grid-column: span 2; }
+
+    .chart-card { background: var(--card); border-radius: 10px; padding: 18px 20px; box-shadow: var(--shadow); }
+    .chart-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+    .chart-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .chart-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .chart-tag {
+      font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px;
+      flex-shrink: 0; margin-left: 8px;
+    }
+    .tag-tq   { background: rgba(21,101,192,0.1); color: var(--blue); }
+    .tag-deg  { background: rgba(0,196,212,0.12); color: #007f8a; }
+    .tag-both { background: rgba(13,37,69,0.08); color: var(--navy); }
+    .chart-wrap { position: relative; }
+    .h200 { height: 200px; }
+    .h240 { height: 240px; }
+    .h280 { height: 280px; }
+    .h320 { height: 320px; }
+
+    /* PLACEHOLDER CARDS */
+    .ph-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .ph-card {
+      background: var(--card); border-radius: 10px; padding: 26px 22px;
+      box-shadow: var(--shadow); text-align: center; border: 2px dashed var(--border);
+    }
+    .ph-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
+    }
+    .badge-p2 { background: rgba(57,73,171,0.1); color: var(--purple); }
+    .badge-p3 { background: rgba(0,137,123,0.1); color: var(--teal); }
+    .ph-icon { font-size: 28px; margin-bottom: 10px; }
+    .ph-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .ph-desc { font-size: 12px; color: var(--text-light); line-height: 1.55; margin-bottom: 14px; }
+    .ph-source { font-size: 11px; color: var(--text-light); background: var(--bg); padding: 7px 12px; border-radius: 6px; text-align: left; }
+    .ph-source strong { color: var(--text); }
+
+    /* DATA SOURCES TABLE */
+    .ds-card { background: var(--card); border-radius: 10px; padding: 18px 20px; box-shadow: var(--shadow); }
+    .ds-card table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .ds-card th { text-align: left; padding: 7px 12px; background: var(--bg); font-weight: 700; color: var(--text-light); text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+    .ds-card td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .ds-card tr:last-child td { border-bottom: none; }
+    .dot { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 11px; }
+    .dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; }
+    .dot-live::before { background: var(--green); }
+    .dot-pend::before { background: var(--cyan); }
+    .dot-off::before  { background: var(--border); }
+
+    /* FOOTER */
+    .footer { background: var(--navy-dark); color: rgba(255,255,255,0.45); text-align: center; padding: 14px; font-size: 11px; margin-top: 20px; }
+
+    /* ── METRIC FRAMEWORK CARDS (Phase 2 & 3) ── */
+    .mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .mc-card {
+      background: var(--card); border-radius: 10px; padding: 20px 22px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      display: flex; flex-direction: column; transition: box-shadow 0.2s;
+    }
+    .mc-card:hover { box-shadow: var(--shadow-hover); }
+    .mc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; gap: 8px; }
+    .level-badge {
+      font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.6px; color: white; white-space: nowrap;
+    }
+    .lb-l1       { background: var(--cyan); }
+    .lb-l2       { background: var(--blue); }
+    .lb-l3       { background: var(--purple); }
+    .lb-cap      { background: var(--teal); }
+    .lb-cost     { background: var(--navy); }
+    .lb-prod     { background: var(--blue-mid); }
+    .lb-talent   { background: var(--green); }
+    .lb-indirect { background: var(--teal); }
+    .status-badge {
+      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0;
+    }
+    .sb-available { background: rgba(46,158,91,0.13);  color: #1e7a47; }
+    .sb-indev     { background: rgba(30,136,229,0.13); color: var(--blue-mid); }
+    .sb-future    { background: rgba(90,116,144,0.12); color: var(--text-light); }
+    .mc-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .mc-sub   { font-size: 11px; color: var(--text-light); margin-bottom: 11px; }
+    .mc-metrics { margin-bottom: 10px; flex-shrink: 0; }
+    .mc-metric-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 11.5px; color: var(--text); padding: 5px 0;
+      border-bottom: 1px solid var(--border); line-height: 1.4;
+    }
+    .mc-metric-item:last-child { border-bottom: none; }
+    .mc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; margin-top: 4px; }
+    .mc-chart-area {
+      position: relative; flex: 1; min-height: 140px; max-height: 160px;
+      background: linear-gradient(135deg, rgba(13,37,69,0.025) 0%, rgba(0,196,212,0.04) 100%);
+      border-radius: 8px; margin: 10px 0 12px; border: 1px dashed var(--border);
+    }
+    .mc-chart-area canvas { padding: 8px; }
+    .sample-tag {
+      position: absolute; top: 6px; right: 8px; z-index: 5;
+      font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+      background: rgba(90,116,144,0.12); color: var(--text-light);
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .mc-footer { border-top: 1px solid var(--border); padding-top: 10px; margin-top: auto; }
+    .mc-source-row { display: flex; gap: 6px; font-size: 11px; margin-bottom: 4px; line-height: 1.4; }
+    .mc-source-row:last-child { margin-bottom: 0; }
+    .mc-src-lbl { font-weight: 700; color: var(--text-light); text-transform: uppercase; font-size: 10px; letter-spacing: 0.4px; white-space: nowrap; padding-top: 1px; }
+    .mc-src-val { color: var(--text-light); }
+
+    /* ── KPI PRIORITIZATION MATRIX ── */
+    .matrix-card { background: var(--card); border-radius: 10px; padding: 20px 22px; box-shadow: var(--shadow); margin-top: 18px; }
+    .matrix-hdr  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .matrix-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .matrix-legend  { display: flex; gap: 14px; align-items: center; }
+    .ml-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-light); }
+    .ml-dot  { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .mx-reset-btn {
+      padding: 5px 13px; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--text-light);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .mx-reset-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .matrix-outer  { display: flex; align-items: stretch; gap: 6px; }
+    .matrix-y-axis { display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; }
+    .mx-tick  { font-size: 10px; color: var(--text-light); line-height: 1; }
+    .mx-y-title {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      font-size: 11px; font-weight: 700; color: var(--text-light);
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .matrix-body  { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .matrix-field {
+      position: relative; width: 100%; height: 380px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      overflow: hidden; background: #fff; user-select: none;
+    }
+    .mquad {
+      position: absolute; width: 50%; height: 50%;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .mq-tl { top:0;    left:0;  background:rgba(57,73,171,0.04);  border-right:1px dashed rgba(0,0,0,0.07); border-bottom:1px dashed rgba(0,0,0,0.07); }
+    .mq-tr { top:0;    right:0; background:rgba(46,158,91,0.04);   border-bottom:1px dashed rgba(0,0,0,0.07); }
+    .mq-bl { bottom:0; left:0;  background:rgba(90,116,144,0.025); border-right:1px dashed rgba(0,0,0,0.07); }
+    .mq-br { bottom:0; right:0; background:rgba(0,153,216,0.03); }
+    .mq-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.32; text-align: center; }
+    .mq-tl .mq-label { color: var(--purple); }
+    .mq-tr .mq-label { color: var(--green); }
+    .mq-bl .mq-label { color: var(--text-light); }
+    .mq-br .mq-label { color: var(--blue); }
+    .mx-chip {
+      position: absolute; transform: translate(-50%, -50%);
+      padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      color: white; cursor: grab; white-space: nowrap; z-index: 10;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.18);
+      transition: box-shadow 0.15s, transform 0.1s;
+      touch-action: none;
+    }
+    .mx-chip:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.26); transform: translate(-50%,-50%) scale(1.05); }
+    .mx-chip.mx-dragging { cursor: grabbing; z-index: 100; transition: none; box-shadow: 0 8px 24px rgba(0,0,0,0.28); transform: translate(-50%,-50%) scale(1.07); }
+    .mxc-p1 { background: linear-gradient(135deg,#1565C0,#1E88E5); }
+    .mxc-p2 { background: linear-gradient(135deg,#00796B,#00ACC1); }
+    .mxc-p3 { background: linear-gradient(135deg,#2E9E5B,#43A047); }
+    .matrix-x-bar { display:flex; align-items:center; justify-content:space-between; padding:5px 4px 0; }
+    .mx-x-title   { font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:0.6px; }
+    .mx-x-tick    { font-size:10px; color:var(--text-light); }
+
+    /* PLATFORM TOGGLE */
+    .plt-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 14px; background: var(--bg); border-radius: 8px;
+      border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .plt-row label { font-size: 12px; font-weight: 600; color: var(--text-light); margin-right: 4px; }
+
+    /* CARD STAMP */
+    .card-stamp { color: var(--text-light); opacity: 0.7; font-size: 10px; margin-top: 4px; display: block; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .g3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 800px) {
+      .main { padding: 14px; }
+      .header { padding: 14px 16px; }
+      .filter-bar { padding: 8px 16px; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .g2, .g3, .g21, .g12 { grid-template-columns: 1fr; }
+      .span2 { grid-column: span 1; }
+      .ph-grid { grid-template-columns: 1fr; }
+      .mc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">PPL</div>
+    <div class="header-title">
+      <h1>Tech Academy <span>Learning Dashboard</span></h1>
+      <p>PPL Corporation &nbsp;·&nbsp; TQ (Udacity) &amp; Degreed &nbsp;·&nbsp; <span class="live-badge">Live Data</span></p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div>Data as of <strong>April 3, 2026</strong></div>
+    <div>Program launch: September 2025</div>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Date Range</span>
+  <button class="preset-btn" onclick="setPreset('30d',this)">Last 30 Days</button>
+  <button class="preset-btn" onclick="setPreset('90d',this)">Last 90 Days</button>
+  <button class="preset-btn" onclick="setPreset('6m',this)">Last 6 Months</button>
+  <button class="preset-btn" onclick="setPreset('ytd',this)">YTD 2026</button>
+  <button class="preset-btn active" onclick="setPreset('all',this)">All Time</button>
+  <div class="vdiv"></div>
+  <div class="filter-custom">
+    <span>From</span>
+    <input type="month" id="startDate" value="2025-09" min="2025-09" max="2026-03" />
+    <span>To</span>
+    <input type="month" id="endDate" value="2026-03" min="2025-09" max="2026-03" />
+    <button class="apply-btn" onclick="applyCustom()">Apply</button>
+  </div>
+  <div class="data-stamp">Refreshed Apr 3, 2026 &nbsp;·&nbsp; Reload to update</div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ═══════════════ PHASE 1 ═══════════════ -->
+  <section class="phase-section" id="p1Section">
+    <div class="phase-header">
+      <span class="phase-badge p1">Phase 1</span>
+      <div class="phase-titles">
+        <div class="phase-title">Usage &amp; Content Metrics</div>
+        <div class="phase-sub">Enrollment, engagement, and content consumption across TQ &amp; Degreed platforms</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi-card c-navy">
+        <div class="kpi-label">Total Enrolled</div>
+        <div class="kpi-value">427</div>
+        <div class="kpi-sub">TQ platform learners</div>
+        <div class="kpi-pill pill-green">↑ +10 since Mar 9</div>
+      </div>
+      <div class="kpi-card c-orange">
+        <div class="kpi-label">Active (7-Day)</div>
+        <div class="kpi-value">15</div>
+        <div class="kpi-sub">of 427 learners · 3.5%</div>
+        <div class="kpi-pill pill-warn">Low activation rate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Program Completions</div>
+        <div class="kpi-value">840</div>
+        <div class="kpi-sub">across all TQ programs</div>
+        <div class="kpi-pill pill-green">85.5% completion rate</div>
+      </div>
+      <div class="kpi-card c-teal">
+        <div class="kpi-label">Total Learning Hours</div>
+        <div class="kpi-value">892</div>
+        <div class="kpi-sub">TQ 845h + Degreed 47h</div>
+        <div class="kpi-pill pill-green">Avg 2.1h / learner</div>
+      </div>
+      <div class="kpi-card c-green">
+        <div class="kpi-label">Degreed Completions</div>
+        <div class="kpi-value">88</div>
+        <div class="kpi-sub">by 23 unique learners</div>
+        <div class="kpi-pill pill-green">↑ March 2026 surge</div>
+      </div>
+    </div>
+
+    <!-- PLATFORM TOGGLE -->
+    <div class="plt-row">
+      <label>Platform:</label>
+      <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
+      <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
+      <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
+    </div>
+
+    <!-- LEARNER FUNNEL -->
+    <div class="chart-grid" style="grid-template-columns:1fr; margin-bottom:16px;">
+      <div class="chart-card" data-platform="tq" data-src="tqBoth">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Learner Funnel</div>
+            <div class="chart-sub">Enrolled → Active → Started → Completed → Certified · TQ platform · Apr 3, 2026 export</div>
+          </div>
+          <span class="chart-tag tag-tq">TQ Platform</span>
+        </div>
+        <div class="chart-wrap h240"><canvas id="funnelChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- MAIN COMBO CHART -->
+    <div class="chart-grid" style="grid-template-columns:1fr; margin-bottom:16px;">
+      <div class="chart-card" data-platform="tq" data-src="tqBoth">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Learner &amp; Enrollment Activity Over Time</div>
+            <div class="chart-sub">Monthly new learner signups (bars) vs. course enrollment records (line) · filtered by date range</div>
+          </div>
+          <span class="chart-tag tag-both">TQ Platform + Roster</span>
+        </div>
+        <div class="chart-wrap h280"><canvas id="comboChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 2: 3 doughnuts -->
+    <div class="chart-grid g3">
+      <div class="chart-card" data-platform="tq" data-src="tqLearner">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Learner Activity Status</div>
+            <div class="chart-sub">7-day activity snapshot · 427 learners</div>
+          </div>
+          <span class="chart-tag tag-tq">TQ</span>
+        </div>
+        <div class="chart-wrap h200"><canvas id="activityChart"></canvas></div>
+      </div>
+      <div class="chart-card" data-platform="tq" data-src="tqRoster">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Program Progress Status</div>
+            <div class="chart-sub">983 enrollment records</div>
+          </div>
+          <span class="chart-tag tag-tq">TQ Roster</span>
+        </div>
+        <div class="chart-wrap h200"><canvas id="statusChart"></canvas></div>
+      </div>
+      <div class="chart-card" data-platform="degreed" data-src="degreedComp">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Degreed Content Types</div>
+            <div class="chart-sub">88 completions · March 2026</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div class="chart-wrap h200"><canvas id="contentTypeChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 3: programs + providers -->
+    <div class="chart-grid g21">
+      <div class="chart-card" data-platform="tq" data-src="tqRoster">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Top Programs by Enrollment</div>
+            <div class="chart-sub">TQ course enrollments across all learners</div>
+          </div>
+          <span class="chart-tag tag-tq">TQ Roster</span>
+        </div>
+        <div class="chart-wrap h320"><canvas id="programsChart"></canvas></div>
+      </div>
+      <div class="chart-card" data-platform="degreed" data-src="degreedComp">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Degreed Content Providers</div>
+            <div class="chart-sub">Completions by platform</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div class="chart-wrap h320"><canvas id="providersChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 4: concept completion + verification -->
+    <div class="chart-grid g2">
+      <div class="chart-card" data-platform="tq" data-src="tqRoster">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Concept Completion Distribution</div>
+            <div class="chart-sub">% of concepts viewed per enrollment · TQ Roster · avg 88.4%</div>
+          </div>
+          <span class="chart-tag tag-tq">TQ Roster</span>
+        </div>
+        <div class="chart-wrap h200"><canvas id="conceptChart"></canvas></div>
+      </div>
+      <div class="chart-card" data-platform="degreed" data-src="degreedComp">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Degreed Verification Status</div>
+            <div class="chart-sub">Verified vs unverified completions</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div class="chart-wrap h200"><canvas id="verifiedChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PHASE 2 ═══════════════ -->
+  <section class="phase-section">
+    <div class="phase-header">
+      <span class="phase-badge p2">Phase 2</span>
+      <div class="phase-titles">
+        <div class="phase-title">Learning Effectiveness</div>
+        <div class="phase-sub">Kirkpatrick-aligned measurement across reaction, learning, behavior, and capability development · charts show sample data until sources are connected</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="mc-grid">
+
+      <!-- LEVEL 1 — REACTION -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-l1">Level 1 — Reaction</span>
+          <span class="status-badge sb-indev">In Development</span>
+        </div>
+        <div class="mc-title">Learning Satisfaction</div>
+        <div class="mc-sub">How learners feel about the training experience</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Learning satisfaction scores — overall program rating</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Instructor &amp; facilitator ratings</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Content relevance ratings — is this applicable to my role?</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Net Promoter Score — would you recommend this program?</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="l1Chart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">Qualtrics / MS Forms · Degreed completion ratings (field present, awaiting activation)</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Enable Degreed star ratings · Deploy post-completion survey trigger</span></div>
+        </div>
+      </div>
+
+      <!-- LEVEL 2 — LEARNING -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-l2">Level 2 — Learning</span>
+          <span class="status-badge sb-indev">In Development</span>
+        </div>
+        <div class="mc-title">Knowledge &amp; Skill Acquisition</div>
+        <div class="mc-sub">Evidence that learning actually occurred</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Assessment &amp; quiz scores by program (TQ quiz completion currently 0.2% — enable in settings)</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Knowledge check pass rates — first attempt vs. retry</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Certification completions — AWS, Azure, Google Cloud via Credly / Acclaim</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Pre/post proficiency: Discovery → Beginner → Fluency level progression</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="l2Chart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">TQ Assessment API · Degreed Skill Data API · Credly / Acclaim certification registry</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Enable TQ quiz modules · Connect Credly API for cert badge tracking</span></div>
+        </div>
+      </div>
+
+      <!-- LEVEL 3 — BEHAVIOR -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-l3">Level 3 — Behavior</span>
+          <span class="status-badge sb-future">Future State</span>
+        </div>
+        <div class="mc-title">On-the-Job Behavior Change</div>
+        <div class="mc-sub">Are learners applying new skills in their roles?</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Manager &amp; supervisor feedback on observed skill application (90-day post-training)</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Before-and-after proficiency scores — manager-rated competency check-in</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Action plan completion rates — commitments made at end of program</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>IT ticket reduction per team after Cloud / AI program completion (ServiceNow)</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="l3Chart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">HRIS performance module · Manager pulse surveys · ServiceNow (IT ticket correlation by team)</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Design 90-day manager check-in survey · Export ServiceNow ticket data by department</span></div>
+        </div>
+      </div>
+
+      <!-- CAPABILITY DEVELOPMENT -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-cap">Capability Development</span>
+          <span class="status-badge sb-future">Future State</span>
+        </div>
+        <div class="mc-title">Workforce Capability Growth</div>
+        <div class="mc-sub">Long-term skill-building and performance impact</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Self-initiated training growth — % learners enrolling beyond assigned coursework</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Proficiency score improvements over rolling 6 &amp; 12-month windows</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Performance rating changes — year-over-year post-Tech Academy enrollment</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Internal mobility — promotions, transfers, and new role placements from program graduates</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="l4Chart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">HRIS performance reviews · Degreed Skill API · TQ self-enrollment vs. assigned data</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Map TQ learner IDs → HRIS employee IDs · Define capability benchmarks per role family</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════ PHASE 3 ═══════════════ -->
+  <section class="phase-section">
+    <div class="phase-header">
+      <span class="phase-badge p3">Phase 3</span>
+      <div class="phase-titles">
+        <div class="phase-title">ROI &amp; Business Impact</div>
+        <div class="phase-sub">Quantifying return on learning investment across training costs, productivity gains, talent savings, and indirect benefits · charts show sample data</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="mc-grid">
+
+      <!-- TRAINING COSTS -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-cost">Training Costs — Investment</span>
+          <span class="status-badge sb-available">Available Now</span>
+        </div>
+        <div class="mc-title">Cost of Training</div>
+        <div class="mc-sub">Total investment in the Tech Academy program</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Platform fees — TQ (Udacity) &amp; Degreed license costs per enrolled learner (427 active)</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Trainer &amp; facilitator salary allocation — L&amp;D staff time attributed to program</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Content development &amp; materials — course build, curation, and licensing</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Administration overhead — program management, reporting, and coordination time</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="p3CostChart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">TQ &amp; Degreed contract data · Finance / AP system for platform fees · HRIS for salary allocation</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Export per-seat contract costs · Allocate L&amp;D staff FTE % to Tech Academy program</span></div>
+        </div>
+      </div>
+
+      <!-- MAXIMIZE PRODUCTIVITY -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-prod">Maximize Productivity — Benefit</span>
+          <span class="status-badge sb-future">Future State</span>
+        </div>
+        <div class="mc-title">Productivity &amp; Output Gains</div>
+        <div class="mc-sub">Value created by upskilled employees</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Productivity output — tasks and projects completed faster post-training</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Time savings — estimated hours saved monthly by applying AI, Cloud, and automation skills</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>New skills applied to active work — self-reported or manager-confirmed within 90 days</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Innovation contributions — new tools, processes, or efficiencies driven by graduates</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="p3ProdChart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">ServiceNow (ticket resolution time) · Project Management tools · 90-day skills-applied survey</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Define productivity baseline metrics per role family · Design skills-applied pulse survey</span></div>
+        </div>
+      </div>
+
+      <!-- REDUCE TALENT MANAGEMENT COSTS -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-talent">Reduce Talent Costs — Benefit</span>
+          <span class="status-badge sb-indev">In Development</span>
+        </div>
+        <div class="mc-title">Talent Management Savings</div>
+        <div class="mc-sub">Cost avoidance through retention and internal mobility</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Voluntary turnover reduction — Tech Academy participants vs. non-participant cohort</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Absenteeism rate comparison — trained vs. untrained cohort year-over-year</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>IT ticket reduction by team — ServiceNow volume correlated with Cloud / AI completions</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Internal promotions — % Tech Academy graduates advancing within 12 months</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="p3TalentChart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">HRIS (turnover, promotion, and absenteeism data) · ServiceNow (IT ticket volumes by dept)</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Match TQ learner IDs → HRIS employee records · Pull ServiceNow tickets by department &amp; date</span></div>
+        </div>
+      </div>
+
+      <!-- INDIRECT BENEFITS -->
+      <div class="mc-card">
+        <div class="mc-top">
+          <span class="level-badge lb-indirect">Indirect Benefits — Benefit</span>
+          <span class="status-badge sb-future">Future State</span>
+        </div>
+        <div class="mc-title">Indirect &amp; Strategic Benefits</div>
+        <div class="mc-sub">Broader organizational value from a skilled workforce</div>
+        <div class="mc-metrics">
+          <div class="mc-metric-item"><span class="mc-dot"></span>Employee engagement scores — pulse survey delta pre/post Tech Academy launch</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Customer satisfaction (CSAT / NPS) — correlated with IT and tech-role upskilling</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Brand &amp; employer value — Tech Academy as a recruiting and retention differentiator</div>
+          <div class="mc-metric-item"><span class="mc-dot"></span>Compliance &amp; risk outcomes — % workforce meeting regulatory certification requirements</div>
+        </div>
+        <div class="mc-chart-area">
+          <span class="sample-tag">Sample Data</span>
+          <canvas id="p3IndirectChart"></canvas>
+        </div>
+        <div class="mc-footer">
+          <div class="mc-source-row"><span class="mc-src-lbl">Data Source</span><span class="mc-src-val">Employee engagement platform · CRM / customer feedback system · Compliance registry</span></div>
+          <div class="mc-source-row"><span class="mc-src-lbl">Next Step</span><span class="mc-src-val">Pull baseline engagement scores (pre-program) · Define compliance cert tracking requirements</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ═══════════════ KPI PRIORITIZATION MATRIX ═══════════════ -->
+  <section class="phase-section">
+    <div class="phase-header">
+      <span class="phase-badge" style="background:#546E7A">Analysis</span>
+      <div class="phase-titles">
+        <div class="phase-title">KPI Prioritization Matrix</div>
+        <div class="phase-sub">Cross-phase planning tool — drag metrics to reposition &nbsp;·&nbsp; Y = Strategic Importance &nbsp;·&nbsp; X = Data Maturity</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="matrix-card" style="margin-top:0">
+      <div class="matrix-hdr">
+        <div>
+          <div class="chart-title">Where should we focus next?</div>
+          <div class="chart-sub">Metrics plotted by current data availability vs. strategic value across all three phases · drag any chip to reposition · hover for full name</div>
+        </div>
+        <div class="matrix-actions">
+          <div class="matrix-legend">
+            <div class="ml-item"><div class="ml-dot" style="background:linear-gradient(135deg,#1565C0,#1E88E5)"></div>Phase 1 — Live</div>
+            <div class="ml-item"><div class="ml-dot" style="background:linear-gradient(135deg,#00796B,#00ACC1)"></div>Phase 2 — Effectiveness</div>
+            <div class="ml-item"><div class="ml-dot" style="background:linear-gradient(135deg,#2E9E5B,#43A047)"></div>Phase 3 — ROI</div>
+          </div>
+          <button class="mx-reset-btn" onclick="resetMatrix()">↺ Reset Positions</button>
+        </div>
+      </div>
+      <div class="matrix-outer">
+        <div class="matrix-y-axis">
+          <span class="mx-tick">High</span>
+          <div class="mx-y-title">Strategic Importance</div>
+          <span class="mx-tick">Low</span>
+        </div>
+        <div class="matrix-body">
+          <div class="matrix-field" id="matrixField">
+            <div class="mquad mq-tl"><span class="mq-label">Invest &amp; Build</span></div>
+            <div class="mquad mq-tr"><span class="mq-label">Act Now</span></div>
+            <div class="mquad mq-bl"><span class="mq-label">Defer</span></div>
+            <div class="mquad mq-br"><span class="mq-label">Monitor</span></div>
+          </div>
+          <div class="matrix-x-bar">
+            <span class="mx-x-tick">← Low</span>
+            <span class="mx-x-title">Data Maturity</span>
+            <span class="mx-x-tick">High →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ DATA REGISTRY ═══════════════ -->
+  <section class="phase-section">
+    <div class="phase-header">
+      <span class="phase-badge ps">System</span>
+      <div class="phase-titles">
+        <div class="phase-title">Data Source Registry</div>
+        <div class="phase-sub">Connected sources and integration status · add new sources to the DATA object in this file</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+    <div class="ds-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Source</th><th>Format</th><th>Records</th><th>Last Updated</th><th>Feeds</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TQ / Udacity</strong> — Company Learners Export</td>
+            <td>CSV</td><td>427 learners</td><td>Apr 3, 2026</td>
+            <td>Enrollment KPIs, Activity Status</td>
+            <td><span class="dot dot-live">Live</span></td>
+          </tr>
+          <tr>
+            <td><strong>TQ / Udacity</strong> — Roster Export</td>
+            <td>CSV</td><td>983 records · 143 learners</td><td>Mar 9, 2026</td>
+            <td>Program charts, Hours, Completion, Status</td>
+            <td><span class="dot dot-live">Live</span></td>
+          </tr>
+          <tr>
+            <td><strong>Degreed</strong> — Completions Detailed by User</td>
+            <td>XLSX</td><td>88 completions · 23 learners</td><td>Apr 1, 2026</td>
+            <td>Content types, Providers, Verification</td>
+            <td><span class="dot dot-live">Live</span></td>
+          </tr>
+          <tr>
+            <td><strong>Degreed</strong> — Content Trends Added</td>
+            <td>XLSX</td><td>41 content items</td><td>Mar 30, 2026</td>
+            <td>Content catalog (pending wiring)</td>
+            <td><span class="dot dot-pend">Pending</span></td>
+          </tr>
+          <tr>
+            <td><strong>TQ Assessment API</strong> — Quiz / Assessment Scores</td>
+            <td>—</td><td>—</td><td>—</td>
+            <td>Phase 2: Assessment Score Distribution</td>
+            <td><span class="dot dot-off">Not Connected</span></td>
+          </tr>
+          <tr>
+            <td><strong>Survey Tool</strong> — Learner Satisfaction / NPS</td>
+            <td>—</td><td>—</td><td>—</td>
+            <td>Phase 2: Satisfaction Scores</td>
+            <td><span class="dot dot-off">Not Connected</span></td>
+          </tr>
+          <tr>
+            <td><strong>ServiceNow / HRIS</strong> — Business Outcomes</td>
+            <td>—</td><td>—</td><td>—</td>
+            <td>Phase 3: All ROL Metrics</td>
+            <td><span class="dot dot-off">Not Connected</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  PPL Tech Academy &nbsp;·&nbsp; Learning Dashboard &nbsp;·&nbsp; Built on TQ (Udacity) &amp; Degreed data &nbsp;·&nbsp; For internal use only &nbsp;·&nbsp; Last data refresh: Apr 3, 2026
+</footer>
+
+<script>
+// ============================================================
+//  DATA LAYER
+//  To connect new data sources: add fields to this object
+//  and wire them to new chart functions below.
+//  Call refreshAllCharts() after updating DATA at runtime.
+// ============================================================
+const DATA = {
+  meta: {
+    lastRefresh: '2026-04-03',
+    programLaunch: '2025-09-01'
+  },
+
+  tq: {
+    learners: {
+      total: 427,
+      activeLast7Days: 15,
+      inactive: 412,
+      withEnrollments: 156,
+      withoutEnrollments: 271,
+      avgActiveEnrollments: 2.43,
+      newByMonth: {
+        '2025-09': 33, '2025-10': 199, '2025-11': 14,
+        '2025-12': 8,  '2026-01': 55,  '2026-02': 107, '2026-03': 11
+      }
+    },
+    roster: {
+      totalEnrollments: 983,
+      uniqueLearners: 143,
+      programsCompleted: 840,
+      programsInProgress: 143,
+      totalLearnerHours: 845.4,
+      avgConceptCompletion: 88.4,
+      onTrackStatus: {
+        'Completed': 839, 'On Track': 6, 'Off Track': 137, 'Graduated': 1
+      },
+      programEnrollments: {
+        'Agentic AI': 127, 'Generative AI': 95, 'Artificial Intelligence': 83,
+        'Cloud': 72, 'Data': 69, 'Agile & DevOps': 69,
+        'Enterprise Platforms': 64, '5G & Edge Computing': 61,
+        'Blockchain': 58, 'Quantum Computing': 58
+      },
+      enrollmentsByMonth: {
+        '2025-09': 17, '2025-10': 292, '2025-11': 278,
+        '2025-12': 203, '2026-01': 121, '2026-02': 54, '2026-03': 18
+      },
+      // Concept completion buckets (derived from roster data)
+      conceptCompletionBuckets: {
+        '100% Complete': 840, '75–99%': 31, '50–74%': 22,
+        '25–49%': 18, '1–24%': 42, 'Not Started': 30
+      }
+    },
+    funnel: {
+      stages: ['Enrolled', 'Active Enrollments', 'Started Programs', 'Completed ≥1', 'Certified'],
+      values: [427, 156, 143, 109, 0]
+    }
+  },
+
+  degreed: {
+    totalCompletions: 88,
+    uniqueLearners: 23,
+    estimatedLearningMinutes: 2826,
+    estimatedLearningHours: 47.1,
+    contentTypes: {
+      'Course': 39, 'Article': 22, 'Video': 12,
+      'Post': 9, 'Podcast': 4, 'Task': 2
+    },
+    contentProviders: {
+      'Degreed Open Library': 47, 'Pluralsight': 37, 'Other': 4
+    },
+    verificationStatus: { 'Verified': 29, 'Unverified': 59 },
+    completionsByMonth: { '2026-03': 88 }
+  },
+
+  // Placeholders — wire in when data is available
+  effectiveness: {
+    assessmentScores: null,
+    skillGainData: null,
+    satisfactionScores: null,
+    npsScore: null
+  },
+  businessImpact: {
+    timeToProductivity: null,
+    itTicketReduction: null,
+    certificationsEarned: null
+  }
+};
+
+// ============================================================
+//  FILTER STATE
+// ============================================================
+let filter = { start: '2025-09', end: '2026-03' };
+
+function setPreset(preset, el) {
+  document.querySelectorAll('#filterBar .preset-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (preset === 'all')  { filter.start = '2025-09'; filter.end = '2026-03'; }
+  else if (preset === '30d') { filter.start = '2026-03'; filter.end = '2026-03'; }
+  else if (preset === '90d') { filter.start = '2026-01'; filter.end = '2026-03'; }
+  else if (preset === '6m')  { filter.start = '2025-10'; filter.end = '2026-03'; }
+  else if (preset === 'ytd') { filter.start = '2026-01'; filter.end = '2026-03'; }
+  document.getElementById('startDate').value = filter.start;
+  document.getElementById('endDate').value = filter.end;
+  refreshTimeCharts();
+}
+
+function applyCustom() {
+  filter.start = document.getElementById('startDate').value;
+  filter.end   = document.getElementById('endDate').value;
+  document.querySelectorAll('#filterBar .preset-btn').forEach(b => b.classList.remove('active'));
+  refreshTimeCharts();
+}
+
+function setPlatform(p, btn) {
+  document.querySelectorAll('.plt-row .preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const section = document.getElementById('p1Section');
+  section.querySelectorAll('.chart-card[data-platform]').forEach(card => {
+    const cp = card.dataset.platform;
+    card.style.display = (p === 'both' || cp === p) ? '' : 'none';
+  });
+  // resize visible charts so Canvas fills new layout
+  setTimeout(() => {
+    Object.values(Chart.instances).forEach(ch => ch.resize());
+  }, 50);
+}
+
+const SOURCE_DATES = {
+  tqLearner:  'Apr 3, 2026',
+  tqRoster:   'Mar 9, 2026',
+  tqBoth:     'Apr 3, 2026',
+  degreedComp:'Apr 1, 2026'
+};
+
+function stampAllCards() {
+  document.querySelectorAll('#p1Section .chart-card[data-src]').forEach(card => {
+    const date = SOURCE_DATES[card.dataset.src];
+    if (!date) return;
+    const sub = card.querySelector('.chart-sub');
+    if (!sub) return;
+    let stamp = sub.nextElementSibling;
+    if (!stamp || !stamp.classList.contains('card-stamp')) {
+      stamp = document.createElement('span');
+      stamp.className = 'card-stamp';
+      sub.after(stamp);
+    }
+    stamp.textContent = '↻ Last updated: ' + date;
+  });
+}
+
+function filterMonths(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([m]) => m >= filter.start && m <= filter.end)
+  );
+}
+
+function monthLabel(m) {
+  const [y, mo] = m.split('-');
+  return new Date(+y, +mo - 1).toLocaleString('default', { month: 'short', year: '2-digit' });
+}
+
+// ============================================================
+//  COLOURS & DEFAULTS
+// ============================================================
+const C = {
+  navy:'#0D2545', blue:'#1565C0', blueMid:'#1E88E5', cyan:'#00C4D4',
+  teal:'#00897B', green:'#2E9E5B', greenLight:'#43A047', mint:'#26C6DA',
+  purple:'#3949AB', steel:'#546E7A',
+  pal: ['#1565C0','#00C4D4','#2E9E5B','#1E88E5','#00897B','#3949AB','#43A047','#26C6DA','#0288D1','#00695C']
+};
+
+const TOOLTIP = {
+  backgroundColor: '#1B2A47',
+  titleFont: { size: 12, weight: '700' },
+  bodyFont: { size: 11 },
+  padding: 10, cornerRadius: 6
+};
+
+const LEGEND = {
+  labels: { font: { size: 11, family: "'Segoe UI',sans-serif" }, padding: 10, boxWidth: 11 }
+};
+
+// ============================================================
+//  CHART INSTANCES
+// ============================================================
+const CHARTS = {};
+
+// ── Learner Funnel ──
+function buildFunnelChart() {
+  const { stages, values } = DATA.tq.funnel;
+  const total = values[0];
+  const ctx = document.getElementById('funnelChart').getContext('2d');
+  const colors = [C.blue, C.blueMid, C.cyan, C.teal, C.green];
+
+  const inlineLabels = {
+    id: 'funnelInline',
+    afterDatasetsDraw(chart) {
+      const { ctx: c } = chart;
+      c.save();
+      chart.data.datasets[0].data.forEach((val, i) => {
+        const meta = chart.getDatasetMeta(0);
+        const bar = meta.data[i];
+        if (!bar) return;
+        const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+        const label = val === 0
+          ? 'Pending — connect Credly/Acclaim'
+          : `${val.toLocaleString()}  (${pct}%)`;
+        c.font = 'bold 12px Inter, sans-serif';
+        c.textBaseline = 'middle';
+        const barWidth = bar.base - bar.x;
+        const midY = (bar.y + bar.base) / 2;
+        const tw = c.measureText(label).width;
+        if (barWidth > tw + 16) {
+          c.fillStyle = '#ffffff';
+          c.textAlign = 'center';
+          c.fillText(label, bar.x + barWidth / 2, bar.y + bar.height / 2);
+        } else {
+          c.fillStyle = val === 0 ? '#9E9E9E' : C.navy;
+          c.textAlign = 'left';
+          c.fillText(label, bar.base + 6, bar.y + bar.height / 2);
+        }
+      });
+      c.restore();
+    }
+  };
+
+  CHARTS.funnel = new Chart(ctx, {
+    type: 'bar',
+    plugins: [inlineLabels],
+    data: {
+      labels: stages,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 4,
+        barThickness: 28
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const val = ctx.parsed.x;
+              const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+              return val === 0
+                ? ' Pending certification data'
+                : ` ${val.toLocaleString()} learners (${pct}% of enrolled)`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          max: Math.ceil(total * 1.15),
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: C.steel, font: { size: 11 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: C.navy, font: { size: 12, weight: '600' } }
+        }
+      }
+    }
+  });
+}
+
+// ── Combo: bars = new learners, line = roster enrollments ──
+function buildComboChart() {
+  const fl = filterMonths(DATA.tq.learners.newByMonth);
+  const fr = filterMonths(DATA.tq.roster.enrollmentsByMonth);
+  const allMonths = [...new Set([...Object.keys(fl), ...Object.keys(fr)])].sort();
+  const labels  = allMonths.map(monthLabel);
+  const barData = allMonths.map(m => fl[m] || 0);
+  const lineData = allMonths.map(m => fr[m] || 0);
+
+  const ctx = document.getElementById('comboChart').getContext('2d');
+  CHARTS.combo = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar', label: 'New Learners Added',
+          data: barData, backgroundColor: C.blue,
+          borderRadius: 5, borderSkipped: false, yAxisID: 'y'
+        },
+        {
+          type: 'line', label: 'Course Enrollments (Roster)',
+          data: lineData, borderColor: C.cyan, backgroundColor: 'rgba(0,196,212,0.1)',
+          borderWidth: 2.5, fill: true, tension: 0.4,
+          pointBackgroundColor: C.cyan, pointRadius: 4, yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { ...LEGEND, position: 'top' },
+        tooltip: TOOLTIP
+      },
+      scales: {
+        y: {
+          beginAtZero: true, position: 'left',
+          title: { display: true, text: 'New Learners', font: { size: 11 }, color: C.blue  },
+          grid: { color: '#EEF0F5' }, ticks: { font: { size: 11 } }
+        },
+        y1: {
+          beginAtZero: true, position: 'right',
+          title: { display: true, text: 'Roster Enrollments', font: { size: 11 }, color: C.cyan },
+          grid: { drawOnChartArea: false }, ticks: { font: { size: 11 } }
+        },
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+// ── Activity doughnut ──
+function buildActivityChart() {
+  const ctx = document.getElementById('activityChart').getContext('2d');
+  CHARTS.activity = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Active (7-day)', 'Inactive'],
+      datasets: [{ data: [DATA.tq.learners.activeLast7Days, DATA.tq.learners.inactive],
+        backgroundColor: [C.green, '#E2E8F0'], borderWidth: 0, hoverOffset: 5 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '72%',
+      plugins: { legend: { ...LEGEND, position: 'bottom' }, tooltip: TOOLTIP }
+    },
+    plugins: [{
+      id: 'center1',
+      beforeDraw(chart) {
+        const {width, height, ctx} = chart;
+        ctx.save();
+        const pct = ((15/427)*100).toFixed(1)+'%';
+        ctx.font = 'bold 18px Segoe UI'; ctx.fillStyle = C.navy;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(pct, width/2, height/2 - 8);
+        ctx.font = '10px Segoe UI'; ctx.fillStyle = '#6B7C93';
+        ctx.fillText('Active', width/2, height/2 + 10);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ── Status doughnut ──
+function buildStatusChart() {
+  const d = DATA.tq.roster.onTrackStatus;
+  const ctx = document.getElementById('statusChart').getContext('2d');
+  CHARTS.status = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(d),
+      datasets: [{ data: Object.values(d),
+        backgroundColor: [C.green, C.blue, C.steel, C.cyan], borderWidth: 0, hoverOffset: 5 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { ...LEGEND, position: 'bottom' }, tooltip: TOOLTIP }
+    }
+  });
+}
+
+// ── Content types doughnut ──
+function buildContentTypeChart() {
+  const d = DATA.degreed.contentTypes;
+  const ctx = document.getElementById('contentTypeChart').getContext('2d');
+  CHARTS.contentType = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(d),
+      datasets: [{ data: Object.values(d), backgroundColor: C.pal, borderWidth: 0, hoverOffset: 5 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: { legend: { ...LEGEND, position: 'bottom' }, tooltip: TOOLTIP }
+    }
+  });
+}
+
+// ── Programs horizontal bar ──
+function buildProgramsChart() {
+  const d = DATA.tq.roster.programEnrollments;
+  const ctx = document.getElementById('programsChart').getContext('2d');
+  CHARTS.programs = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(d).map(l => 'TQ: ' + l),
+      datasets: [{ label: 'Enrollments', data: Object.values(d),
+        backgroundColor: C.pal, borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: TOOLTIP },
+      scales: {
+        x: { beginAtZero: true, grid: { color: '#EEF0F5' }, ticks: { font: { size: 10 } } },
+        y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ── Providers bar ──
+function buildProvidersChart() {
+  const d = DATA.degreed.contentProviders;
+  const ctx = document.getElementById('providersChart').getContext('2d');
+  CHARTS.providers = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(d),
+      datasets: [{ label: 'Completions', data: Object.values(d),
+        backgroundColor: [C.blue, C.teal, C.cyan], borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: TOOLTIP },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#EEF0F5' }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+}
+
+// ── Concept completion bar ──
+function buildConceptChart() {
+  const d = DATA.tq.roster.conceptCompletionBuckets;
+  const ctx = document.getElementById('conceptChart').getContext('2d');
+  CHARTS.concept = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(d),
+      datasets: [{ label: 'Enrollments', data: Object.values(d),
+        backgroundColor: [C.green, C.teal, C.blue, C.cyan, C.mint, '#CBD8E8'],
+        borderRadius: 5, borderSkipped: false }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: TOOLTIP },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#EEF0F5' }, ticks: { font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ── Verification doughnut ──
+function buildVerifiedChart() {
+  const d = DATA.degreed.verificationStatus;
+  const ctx = document.getElementById('verifiedChart').getContext('2d');
+  CHARTS.verified = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(d),
+      datasets: [{ data: Object.values(d),
+        backgroundColor: [C.green, '#E2E8F0'], borderWidth: 0, hoverOffset: 5 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '72%',
+      plugins: { legend: { ...LEGEND, position: 'bottom' }, tooltip: TOOLTIP }
+    },
+    plugins: [{
+      id: 'center2',
+      beforeDraw(chart) {
+        const {width, height, ctx} = chart;
+        ctx.save();
+        ctx.font = 'bold 18px Segoe UI'; ctx.fillStyle = C.navy;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('33%', width/2, height/2 - 8);
+        ctx.font = '10px Segoe UI'; ctx.fillStyle = '#6B7C93';
+        ctx.fillText('Verified', width/2, height/2 + 10);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ============================================================
+//  PHASE 2 & 3 — PLACEHOLDER CHARTS (sample / mock data)
+//  Replace mock data arrays with real values when sources connect.
+// ============================================================
+
+// Shared placeholder options — muted axes, no interactive tooltip
+const PH = (indexAxis) => ({
+  responsive: true, maintainAspectRatio: false, indexAxis: indexAxis || 'x',
+  plugins: {
+    legend: { display: false },
+    tooltip: { enabled: false }
+  },
+  scales: {
+    x: { grid: { display: indexAxis === 'y' ? true : false, color: '#EEF2F7' },
+         ticks: { font: { size: 9 }, color: '#99afc4' } },
+    y: { beginAtZero: true,
+         grid: { display: indexAxis === 'y' ? false : true, color: '#EEF2F7' },
+         ticks: { font: { size: 9 }, color: '#99afc4' } }
+  },
+  animation: { duration: 600 }
+});
+
+// Muted blue-green palette for sample charts
+const PC = (a) => [
+  `rgba(21,101,192,${a})`, `rgba(0,196,212,${a})`, `rgba(46,158,91,${a})`,
+  `rgba(0,137,123,${a})`,  `rgba(30,136,229,${a})`
+];
+
+// ── L1: Reaction — Horizontal bar, satisfaction distribution ──
+function buildL1Chart() {
+  const ctx = document.getElementById('l1Chart').getContext('2d');
+  CHARTS.l1 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied'],
+      datasets: [{ data: [45, 31, 15, 9], backgroundColor: PC(0.45), borderRadius: 4, borderSkipped: false }]
+    },
+    options: PH('y')
+  });
+}
+
+// ── L2: Learning — Bar, mock pass rates by top program ──
+function buildL2Chart() {
+  const ctx = document.getElementById('l2Chart').getContext('2d');
+  CHARTS.l2 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Agentic AI', 'Gen AI', 'Cloud', 'Data', 'Agile'],
+      datasets: [{ label: 'Pass Rate %', data: [78, 85, 72, 80, 88], backgroundColor: PC(0.45), borderRadius: 4, borderSkipped: false }]
+    },
+    options: PH()
+  });
+}
+
+// ── L3: Behavior — Grouped bar, before vs after proficiency ──
+function buildL3Chart() {
+  const ctx = document.getElementById('l3Chart').getContext('2d');
+  CHARTS.l3 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['AI Skills', 'Cloud', 'Data', 'DevOps', 'Platforms'],
+      datasets: [
+        { label: 'Before', data: [2.1, 2.4, 2.0, 1.8, 2.3], backgroundColor: 'rgba(90,116,144,0.22)', borderRadius: 4, borderSkipped: false },
+        { label: 'After',  data: [3.6, 3.8, 3.5, 3.2, 3.7], backgroundColor: PC(0.5),                 borderRadius: 4, borderSkipped: false }
+      ]
+    },
+    options: {
+      ...PH(),
+      plugins: {
+        legend: { display: true, labels: { font: { size: 9 }, boxWidth: 9, color: '#5A7490' } },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
+// ── L4: Capability — Line, mock proficiency score trend ──
+function buildL4Chart() {
+  const ctx = document.getElementById('l4Chart').getContext('2d');
+  CHARTS.l4 = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+      datasets: [{
+        data: [1.2, 1.5, 1.9, 2.3, 2.5, 2.8, 3.1],
+        borderColor: 'rgba(0,196,212,0.65)', backgroundColor: 'rgba(0,196,212,0.08)',
+        borderWidth: 2, tension: 0.4, fill: true,
+        pointRadius: 3, pointBackgroundColor: 'rgba(0,196,212,0.7)'
+      }]
+    },
+    options: PH()
+  });
+}
+
+// ── P3 Cost — Bar, training cost breakdown by category ──
+function buildP3CostChart() {
+  const ctx = document.getElementById('p3CostChart').getContext('2d');
+  CHARTS.p3Cost = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Platform Fees', 'Trainer Salary', 'Materials', 'Admin', 'Facilities'],
+      datasets: [{ data: [42, 28, 12, 10, 8], backgroundColor: PC(0.45), borderRadius: 4, borderSkipped: false }]
+    },
+    options: PH()
+  });
+}
+
+// ── P3 Productivity — Horizontal bar, benefit levers ──
+function buildP3ProdChart() {
+  const ctx = document.getElementById('p3ProdChart').getContext('2d');
+  CHARTS.p3Prod = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Time Saved (hrs/mo)', 'Output Increase %', 'Skills Applied %', 'Innovations'],
+      datasets: [{ data: [12, 18, 65, 8], backgroundColor: PC(0.45), borderRadius: 4, borderSkipped: false }]
+    },
+    options: PH('y')
+  });
+}
+
+// ── P3 Talent — Grouped bar, before vs after key talent metrics ──
+function buildP3TalentChart() {
+  const ctx = document.getElementById('p3TalentChart').getContext('2d');
+  CHARTS.p3Talent = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Turnover %', 'Absenteeism %', 'IT Tickets (÷10)', 'Promotions'],
+      datasets: [
+        { label: 'Before', data: [14, 6.2, 32, 8],  backgroundColor: 'rgba(90,116,144,0.22)', borderRadius: 4, borderSkipped: false },
+        { label: 'After',  data: [9,  4.8, 21, 15], backgroundColor: PC(0.5),                  borderRadius: 4, borderSkipped: false }
+      ]
+    },
+    options: {
+      ...PH(),
+      plugins: {
+        legend: { display: true, labels: { font: { size: 9 }, boxWidth: 9, color: '#5A7490' } },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
+// ── P3 Indirect — Radar, strategic benefit dimensions ──
+function buildP3IndirectChart() {
+  const ctx = document.getElementById('p3IndirectChart').getContext('2d');
+  CHARTS.p3Indirect = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['Engagement', 'CSAT', 'Employer Brand', 'Compliance', 'Risk Score'],
+      datasets: [{
+        data: [80, 85, 75, 95, 88],
+        borderColor: 'rgba(0,196,212,0.55)', backgroundColor: 'rgba(0,196,212,0.09)',
+        borderWidth: 2, pointRadius: 3, pointBackgroundColor: 'rgba(0,196,212,0.6)'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: {
+        r: {
+          beginAtZero: true, max: 100,
+          grid: { color: '#E4EDF5' },
+          ticks: { font: { size: 8 }, color: '#99afc4', stepSize: 25, backdropColor: 'transparent' },
+          pointLabels: { font: { size: 9 }, color: '#5A7490' }
+        }
+      },
+      animation: { duration: 600 }
+    }
+  });
+}
+
+// ============================================================
+//  KPI PRIORITIZATION MATRIX — drag-and-drop 2×2 widget
+//  x = Data Maturity (0–100, left→right)
+//  y = Strategic Importance (0–100, bottom→top; inverted in CSS)
+//  To change default positions: edit x/y in MATRIX_METRICS below.
+// ============================================================
+const MATRIX_METRICS = [
+  // ── Phase 1 — Live data (high data maturity, medium-high strategic importance)
+  { id:'mm1',  short:'Enrollments',        label:'Enrollments & Completions · Phase 1 Live',             phase:1, x:78, y:67 },
+  { id:'mm2',  short:'Learning Hours',     label:'Learning Hours Tracking · Phase 1 Live',               phase:1, x:74, y:44 },
+  { id:'mm3',  short:'Content Engagement', label:'Content Engagement – Degreed · Phase 1 Live',          phase:1, x:64, y:53 },
+  { id:'mm4',  short:'Learner Activity',   label:'Active Learner Rate (7-day) · Phase 1 Live',           phase:1, x:84, y:36 },
+  // ── Phase 2 — Low data maturity, high strategic importance → Invest & Build quadrant
+  { id:'mm5',  short:'Satisfaction',       label:'Learning Satisfaction (Level 1 Reaction) · In Dev',    phase:2, x:28, y:68 },
+  { id:'mm6',  short:'Assessments',        label:'Assessment Scores (Level 2 Learning) · In Dev',        phase:2, x:15, y:80 },
+  { id:'mm7',  short:'Behavior Change',    label:'On-the-Job Behavior Change (Level 3) · Future State',  phase:2, x: 8, y:91 },
+  { id:'mm8',  short:'Capability Dev.',    label:'Workforce Capability Development · Future State',      phase:2, x:42, y:76 },
+  // ── Phase 3 — Mixed placement based on current data availability
+  { id:'mm9',  short:'Training Costs',     label:'Training Cost Tracking · Available Now',               phase:3, x:72, y:70 },
+  { id:'mm10', short:'Productivity',       label:'Productivity & Output Gains · Future State',           phase:3, x:24, y:86 },
+  { id:'mm11', short:'Talent Savings',     label:'Talent Management Savings · In Development',           phase:3, x:37, y:74 },
+  { id:'mm12', short:'IT Tickets',         label:'IT Ticket Reduction (ServiceNow) · In Development',   phase:3, x:46, y:65 },
+  { id:'mm13', short:'Indirect Benefits',  label:'Indirect & Strategic Benefits · Future State',         phase:3, x:16, y:38 },
+  { id:'mm14', short:'Certifications',     label:'Certification Attainment · Future State',              phase:3, x:32, y:62 },
+];
+
+// Immutable defaults — used by Reset
+const MX_DEFAULTS = MATRIX_METRICS.map(m => ({ id: m.id, x: m.x, y: m.y }));
+// Mutable state — updated on every drag
+let mxPositions = MX_DEFAULTS.map(d => ({ ...d }));
+
+function mxGetPos(id) { return mxPositions.find(p => p.id === id); }
+
+function initMatrix() {
+  const field = document.getElementById('matrixField');
+  if (!field) return;
+  // Remove existing chips only (leave quadrant divs intact)
+  field.querySelectorAll('.mx-chip').forEach(el => el.remove());
+
+  MATRIX_METRICS.forEach(m => {
+    const pos = mxGetPos(m.id);
+    const chip = document.createElement('div');
+    chip.className  = `mx-chip mxc-p${m.phase}`;
+    chip.id         = 'mxc-' + m.id;
+    chip.textContent = m.short;
+    chip.title       = m.label;   // native tooltip on hover
+    chip.dataset.mid = m.id;
+    // x = % from left; y is inverted (high strategic importance = CSS top near 0%)
+    chip.style.left = pos.x + '%';
+    chip.style.top  = (100 - pos.y) + '%';
+    chip.addEventListener('pointerdown', mxStartDrag);
+    field.appendChild(chip);
+  });
+}
+
+function mxStartDrag(e) {
+  e.preventDefault();
+  const chip  = e.currentTarget;
+  const field = document.getElementById('matrixField');
+  try { chip.setPointerCapture(e.pointerId); } catch (_) {}
+  chip.classList.add('mx-dragging');
+
+  function onMove(ev) {
+    const rect = field.getBoundingClientRect();
+    let px = ((ev.clientX - rect.left) / rect.width)  * 100;
+    let py = ((ev.clientY - rect.top)  / rect.height) * 100;
+    // Clamp so chip stays fully within bounds
+    px = Math.max(1, Math.min(99, px));
+    py = Math.max(1, Math.min(99, py));
+    chip.style.left = px + '%';
+    chip.style.top  = py + '%';
+    // Persist to state (convert CSS-top back to strategic-importance y)
+    const pos = mxGetPos(chip.dataset.mid);
+    if (pos) { pos.x = Math.round(px); pos.y = Math.round(100 - py); }
+  }
+
+  function onEnd() {
+    chip.classList.remove('mx-dragging');
+    chip.removeEventListener('pointermove',  onMove);
+    chip.removeEventListener('pointerup',    onEnd);
+    chip.removeEventListener('pointercancel',onEnd);
+  }
+
+  chip.addEventListener('pointermove',  onMove);
+  chip.addEventListener('pointerup',    onEnd);
+  chip.addEventListener('pointercancel',onEnd);
+}
+
+function resetMatrix() {
+  mxPositions = MX_DEFAULTS.map(d => ({ ...d }));
+  initMatrix();
+}
+
+// ============================================================
+//  REFRESH — only time-sensitive charts react to date filter
+// ============================================================
+function refreshTimeCharts() {
+  if (CHARTS.combo) { CHARTS.combo.destroy(); delete CHARTS.combo; }
+  buildComboChart();
+}
+
+// ============================================================
+//  INIT ALL
+// ============================================================
+function initAll() {
+  // Phase 1 — live data charts
+  buildFunnelChart();
+  buildComboChart();
+  buildActivityChart();
+  buildStatusChart();
+  buildContentTypeChart();
+  buildProgramsChart();
+  buildProvidersChart();
+  buildConceptChart();
+  buildVerifiedChart();
+  // Phase 2 — placeholder charts
+  buildL1Chart();
+  buildL2Chart();
+  buildL3Chart();
+  buildL4Chart();
+  // Phase 3 — placeholder charts
+  buildP3CostChart();
+  buildP3ProdChart();
+  buildP3TalentChart();
+  buildP3IndirectChart();
+  // KPI Matrix — drag-and-drop widget
+  initMatrix();
+  // Stamps + platform filter
+  stampAllCards();
+}
+
+document.addEventListener('DOMContentLoaded', initAll);
+</script>
+</body>
+</html>

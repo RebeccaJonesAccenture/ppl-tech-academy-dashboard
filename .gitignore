@@ -1,0 +1,12 @@
+# Raw data exports — excluded from version control
+*.csv
+*.xlsx
+*.xls
+
+# Claude Code session data
+.claude/
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini
