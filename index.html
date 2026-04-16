@@ -377,14 +377,6 @@
 </head>
 <body>
 
-<!-- PLATFORM TOGGLE — primary filter, first interactive element -->
-<div class="plt-row" id="platformBar">
-  <label>Platform:</label>
-  <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
-  <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
-  <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
-</div>
-
 <!-- HEADER -->
 <header class="header">
   <div class="header-brand">
@@ -399,6 +391,14 @@
     <div>Program launch: September 2025</div>
   </div>
 </header>
+
+<!-- PLATFORM TOGGLE -->
+<div class="plt-row" id="platformBar">
+  <label>Platform:</label>
+  <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
+  <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
+  <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
+</div>
 
 <!-- FILTER BAR -->
 <div class="filter-bar" id="filterBar">
