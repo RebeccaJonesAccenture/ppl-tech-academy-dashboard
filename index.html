@@ -320,13 +320,27 @@
     .mx-x-title   { font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:0.6px; }
     .mx-x-tick    { font-size:10px; color:var(--text-light); }
 
-    /* PLATFORM TOGGLE */
+    /* PLATFORM TOGGLE — top bar above date filter */
     .plt-row {
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      padding: 10px 14px; background: var(--bg); border-radius: 8px;
-      border: 1px solid var(--border); margin-bottom: 16px;
+      padding: 10px clamp(12px, 3vw, 32px);
+      background: var(--navy); border-bottom: 2px solid var(--cyan);
+      width: 100%;
     }
-    .plt-row label { font-size: 12px; font-weight: 600; color: var(--text-light); margin-right: 4px; }
+    .plt-row label {
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6);
+      text-transform: uppercase; letter-spacing: 0.7px; margin-right: 4px;
+    }
+    .plt-row .preset-btn {
+      border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.75);
+      background: transparent;
+    }
+    .plt-row .preset-btn:hover {
+      border-color: var(--cyan); color: var(--cyan); background: transparent;
+    }
+    .plt-row .preset-btn.active {
+      background: var(--cyan); border-color: var(--cyan); color: var(--navy-dark);
+    }
 
     /* CARD STAMP */
     .card-stamp { color: var(--text-light); opacity: 0.7; font-size: 10px; margin-top: 4px; display: block; }
@@ -362,6 +376,14 @@
   </style>
 </head>
 <body>
+
+<!-- PLATFORM TOGGLE — primary filter, first interactive element -->
+<div class="plt-row" id="platformBar">
+  <label>Platform:</label>
+  <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
+  <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
+  <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
+</div>
 
 <!-- HEADER -->
 <header class="header">
@@ -411,46 +433,38 @@
       <div class="phase-line"></div>
     </div>
 
-    <!-- KPIs -->
+    <!-- KPIs — values driven by platform filter via updateKPITiles() -->
     <div class="kpi-row">
       <div class="kpi-card c-navy">
-        <div class="kpi-label">Total Enrolled</div>
-        <div class="kpi-value">427</div>
-        <div class="kpi-sub">TQ platform learners</div>
-        <div class="kpi-pill pill-green">↑ +10 since Mar 9</div>
+        <div class="kpi-label" id="kpi1-label">Total Enrolled</div>
+        <div class="kpi-value" id="kpi1-value">427</div>
+        <div class="kpi-sub"   id="kpi1-sub">TQ platform learners</div>
+        <div class="kpi-pill pill-green" id="kpi1-pill">↑ +10 since Mar 9</div>
       </div>
       <div class="kpi-card c-orange">
-        <div class="kpi-label">Active (7-Day)</div>
-        <div class="kpi-value">15</div>
-        <div class="kpi-sub">of 427 learners · 3.5%</div>
-        <div class="kpi-pill pill-warn">Low activation rate</div>
+        <div class="kpi-label" id="kpi2-label">Active (7-Day)</div>
+        <div class="kpi-value" id="kpi2-value">15</div>
+        <div class="kpi-sub"   id="kpi2-sub">of 427 learners · 3.5%</div>
+        <div class="kpi-pill pill-warn" id="kpi2-pill">Low activation rate</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Program Completions</div>
-        <div class="kpi-value">840</div>
-        <div class="kpi-sub">across all TQ programs</div>
-        <div class="kpi-pill pill-green">85.5% completion rate</div>
+        <div class="kpi-label" id="kpi3-label">Program Completions</div>
+        <div class="kpi-value" id="kpi3-value">840</div>
+        <div class="kpi-sub"   id="kpi3-sub">across all TQ programs</div>
+        <div class="kpi-pill pill-green" id="kpi3-pill">85.5% completion rate</div>
       </div>
       <div class="kpi-card c-teal">
-        <div class="kpi-label">Total Learning Hours</div>
-        <div class="kpi-value">892</div>
-        <div class="kpi-sub">TQ 845h + Degreed 47h</div>
-        <div class="kpi-pill pill-green">Avg 2.1h / learner</div>
+        <div class="kpi-label" id="kpi4-label">Total Learning Hours</div>
+        <div class="kpi-value" id="kpi4-value">892</div>
+        <div class="kpi-sub"   id="kpi4-sub">TQ 845h + Degreed 47h</div>
+        <div class="kpi-pill pill-green" id="kpi4-pill">Avg 2.1h / learner</div>
       </div>
       <div class="kpi-card c-green">
-        <div class="kpi-label">Degreed Completions</div>
-        <div class="kpi-value">88</div>
-        <div class="kpi-sub">by 23 unique learners</div>
-        <div class="kpi-pill pill-green">↑ March 2026 surge</div>
+        <div class="kpi-label" id="kpi5-label">Degreed Completions</div>
+        <div class="kpi-value" id="kpi5-value">88</div>
+        <div class="kpi-sub"   id="kpi5-sub">by 23 unique learners</div>
+        <div class="kpi-pill pill-green" id="kpi5-pill">↑ March 2026 surge</div>
       </div>
-    </div>
-
-    <!-- PLATFORM TOGGLE -->
-    <div class="plt-row">
-      <label>Platform:</label>
-      <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
-      <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
-      <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
     </div>
 
     <!-- LEARNER FUNNEL -->
@@ -1019,15 +1033,56 @@ function applyCustom() {
   refreshTimeCharts();
 }
 
+// ── KPI tile data per platform ──────────────────────────────
+const KPI_DATA = {
+  both: [
+    { label:'Total Enrolled',      value:'427',   sub:'TQ platform learners',          pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
+    { label:'Active (7-Day)',       value:'15',    sub:'of 427 learners · 3.5%',        pill:'Low activation rate',      pillClass:'pill-warn'  },
+    { label:'Program Completions',  value:'840',   sub:'across all TQ programs',         pill:'85.5% completion rate',    pillClass:'pill-green' },
+    { label:'Total Learning Hours', value:'892',   sub:'TQ 845h + Degreed 47h',          pill:'Avg 2.1h / learner',       pillClass:'pill-green' },
+    { label:'Degreed Completions',  value:'88',    sub:'by 23 unique learners',          pill:'↑ March 2026 surge',       pillClass:'pill-green' }
+  ],
+  tq: [
+    { label:'Total Enrolled',       value:'427',   sub:'TQ platform learners',           pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
+    { label:'Active (7-Day)',        value:'15',    sub:'of 427 learners · 3.5%',         pill:'Low activation rate',      pillClass:'pill-warn'  },
+    { label:'Program Completions',   value:'840',   sub:'across all TQ programs',          pill:'85.5% completion rate',    pillClass:'pill-green' },
+    { label:'Total Learning Hours',  value:'845',   sub:'TQ platform hours',               pill:'Avg 1.98h / learner',      pillClass:'pill-green' },
+    { label:'Avg Concept Completion',value:'88.4%', sub:'per enrollment record',           pill:'TQ Roster data',           pillClass:'pill-green' }
+  ],
+  degreed: [
+    { label:'Unique Learners',       value:'23',    sub:'Degreed unique learners',         pill:'March 2026 data',          pillClass:'pill-green' },
+    { label:'Content Completions',   value:'88',    sub:'across all content types',        pill:'Courses, Articles, Videos',pillClass:'pill-green' },
+    { label:'Course Completions',    value:'39',    sub:'of 88 Degreed completions',       pill:'44% of all content',       pillClass:'pill-green' },
+    { label:'Total Learning Hours',  value:'47',    sub:'Degreed estimated hours',         pill:'Avg 2.0h / learner',       pillClass:'pill-green' },
+    { label:'Verified Completions',  value:'29',    sub:'of 88 completions · 33%',         pill:'59 unverified remaining',  pillClass:'pill-warn'  }
+  ]
+};
+
+function updateKPITiles(p) {
+  const tiles = KPI_DATA[p] || KPI_DATA.both;
+  tiles.forEach((t, i) => {
+    const n = i + 1;
+    document.getElementById('kpi' + n + '-label').textContent = t.label;
+    document.getElementById('kpi' + n + '-value').textContent = t.value;
+    document.getElementById('kpi' + n + '-sub').textContent   = t.sub;
+    const pill = document.getElementById('kpi' + n + '-pill');
+    pill.textContent  = t.pill;
+    pill.className    = 'kpi-pill ' + t.pillClass;
+  });
+}
+
 function setPlatform(p, btn) {
-  document.querySelectorAll('.plt-row .preset-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#platformBar .preset-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // Update summary tiles
+  updateKPITiles(p);
+  // Show/hide chart cards
   const section = document.getElementById('p1Section');
   section.querySelectorAll('.chart-card[data-platform]').forEach(card => {
     const cp = card.dataset.platform;
     card.style.display = (p === 'both' || cp === p) ? '' : 'none';
   });
-  // resize visible charts so Canvas fills new layout
+  // Resize visible charts so canvas fills new layout
   setTimeout(() => {
     Object.values(Chart.instances).forEach(ch => ch.resize());
   }, 50);
