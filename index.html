@@ -342,6 +342,28 @@
       background: var(--cyan); border-color: var(--cyan); color: var(--navy-dark);
     }
 
+    /* PATHWAY FILTER BAR */
+    .pathway-bar {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 8px clamp(12px, 3vw, 32px);
+      background: #0f2f59; border-bottom: 1px solid rgba(255,255,255,0.08);
+      width: 100%;
+    }
+    .pathway-bar label {
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5);
+      text-transform: uppercase; letter-spacing: 0.7px; margin-right: 4px; white-space: nowrap;
+    }
+    .pathway-btn {
+      padding: 4px 11px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.18);
+      background: transparent; font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.65); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .pathway-btn:hover { border-color: var(--mint); color: var(--mint); }
+    .pathway-btn.active { background: var(--teal); border-color: var(--teal); color: white; }
+    .pathway-tq-note {
+      font-size: 10px; color: rgba(255,255,255,0.35); margin-left: 8px; font-style: italic;
+    }
+
     /* CARD STAMP */
     .card-stamp { color: var(--text-light); opacity: 0.7; font-size: 10px; margin-top: 4px; display: block; }
 
@@ -398,6 +420,22 @@
   <button class="preset-btn active" onclick="setPlatform('both',this)">All Platforms</button>
   <button class="preset-btn" onclick="setPlatform('tq',this)">TQ / Udacity</button>
   <button class="preset-btn" onclick="setPlatform('degreed',this)">Degreed</button>
+</div>
+
+<!-- PATHWAY FILTER -->
+<div class="pathway-bar" id="pathwayBar">
+  <label>Pathway:</label>
+  <button class="pathway-btn active" onclick="setPathway('all',this)">All Pathways</button>
+  <button class="pathway-btn" onclick="setPathway('AI Solutions',this)">AI Solutions</button>
+  <button class="pathway-btn" onclick="setPathway('AI Essentials: Understand Artificial Intelligence at Work',this)">AI Essentials</button>
+  <button class="pathway-btn" onclick="setPathway('Agile &amp; SAFe Fundamentals',this)">Agile &amp; SAFe</button>
+  <button class="pathway-btn" onclick="setPathway('Lean Delivery',this)">Lean Delivery</button>
+  <button class="pathway-btn" onclick="setPathway('Enterprise Data &amp; AI-ML Strategy',this)">Enterprise Data &amp; AI</button>
+  <button class="pathway-btn" onclick="setPathway('Technology Architecture',this)">Tech Architecture</button>
+  <button class="pathway-btn" onclick="setPathway('Data &amp; Information Architecture',this)">Data Architecture</button>
+  <button class="pathway-btn" onclick="setPathway('Data Management',this)">Data Management</button>
+  <button class="pathway-btn" onclick="setPathway('Security Engineering',this)">Security Engineering</button>
+  <span class="pathway-tq-note" id="pathwayTqNote"></span>
 </div>
 
 <!-- FILTER BAR -->
@@ -801,6 +839,56 @@
 
   </section>
 
+  <!-- ═══════════════ DEGREED INSIGHTS ═══════════════ -->
+  <section class="phase-section">
+    <div class="phase-header">
+      <span class="phase-badge" style="background:var(--teal)">Degreed Insights</span>
+      <div class="phase-titles">
+        <div class="phase-title">Skills, Pathways &amp; Search</div>
+        <div class="phase-sub">Learner skill interactions, pathway completion activity, and platform search behaviour · source: Degreed exports Apr 20, 2026</div>
+      </div>
+      <div class="phase-line"></div>
+    </div>
+
+    <!-- ROW 1: Skills + Pathway Progress -->
+    <div class="chart-grid g2" style="margin-bottom:16px;">
+      <div class="chart-card">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Skills Engagement — Top 15</div>
+            <div class="chart-sub">Skills followed by learners · 45 unique learners · 170 unique skills tracked</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div class="chart-wrap h320"><canvas id="skillsChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Pathway Activity</div>
+            <div class="chart-sub">Learner count and content completions per active pathway · 16 unique learners across 10 pathways</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div class="chart-wrap h320"><canvas id="pathwayProgressChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Search Behaviour -->
+    <div class="chart-grid" style="grid-template-columns:1fr; margin-bottom:0;">
+      <div class="chart-card">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Platform Search Behaviour</div>
+            <div class="chart-sub">Search terms entered in Degreed · Jan 21 – Apr 20, 2026 · 21 unique searches recorded</div>
+          </div>
+          <span class="chart-tag tag-deg">Degreed</span>
+        </div>
+        <div id="searchList" style="padding:4px 0 8px;"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══════════════ KPI PRIORITIZATION MATRIX ═══════════════ -->
   <section class="phase-section">
     <div class="phase-header">
@@ -979,19 +1067,87 @@ const DATA = {
   },
 
   degreed: {
-    totalCompletions: 88,
-    uniqueLearners: 23,
-    estimatedLearningMinutes: 2826,
-    estimatedLearningHours: 47.1,
+    totalCompletions: 123,
+    uniqueLearners: 27,
+    estimatedLearningMinutes: 5017,
+    estimatedLearningHours: 83.6,
     contentTypes: {
-      'Course': 39, 'Article': 22, 'Video': 12,
-      'Post': 9, 'Podcast': 4, 'Task': 2
+      'Course': 67, 'Article': 25, 'Video': 14,
+      'Post': 10, 'Podcast': 5, 'Task': 2
     },
     contentProviders: {
-      'Degreed Open Library': 47, 'Pluralsight': 37, 'Other': 4
+      'Pluralsight': 65, 'Degreed Open Library': 54, 'Other': 4
     },
-    verificationStatus: { 'Verified': 29, 'Unverified': 59 },
-    completionsByMonth: { '2026-03': 88 }
+    verificationStatus: { 'Verified': 58, 'Unverified': 65 },
+    completionsByMonth: { '2026-02': 1, '2026-03': 88, '2026-04': 34 },
+
+    // Pathway filter data — source: PPL Pathway (Detailed by User) 04/20
+    pathwayLearners: {
+      'AI Solutions':                                            ['RWPierfy@pplweb.com','ATCronin@pplweb.com','DHKirschman@pplweb.com','JDBurdett@pplweb.com','ELDo@pplweb.com','TDDierksheide@pplweb.com','PLIsgrigg@pplweb.com','RPeesa@pplweb.com'],
+      'AI Essentials: Understand Artificial Intelligence at Work':['GSnyder@pplweb.com','EJohnson1@pplweb.com','JDvalori@pplweb.com'],
+      'Agile & SAFe Fundamentals':                              ['JDvalori@pplweb.com','HVDang@pplweb.com','JGrumbein@pplweb.com'],
+      'Lean Delivery':                                          ['JDvalori@pplweb.com'],
+      'Enterprise Data & AI-ML Strategy':                       ['RPeesa@pplweb.com'],
+      'Technology Architecture':                                ['JWVermillion@pplweb.com'],
+      'Data & Information Architecture':                        ['TKunkle@pplweb.com'],
+      'Data Management':                                        ['RPeesa@pplweb.com'],
+      'Security Engineering':                                   ['ELDo@pplweb.com']
+    },
+    pathwayStats: {
+      'AI Solutions':                                            { learners:8,  completions:21, hours:14.8, required:21 },
+      'AI Essentials: Understand Artificial Intelligence at Work':{ learners:3,  completions:39, hours:3.2,  required:23 },
+      'Agile & SAFe Fundamentals':                              { learners:3,  completions:13, hours:15.8, required:13 },
+      'Lean Delivery':                                          { learners:1,  completions:2,  hours:3.5,  required:2  },
+      'Enterprise Data & AI-ML Strategy':                       { learners:1,  completions:1,  hours:0.3,  required:1  },
+      'Technology Architecture':                                { learners:1,  completions:1,  hours:2.4,  required:1  },
+      'Data & Information Architecture':                        { learners:1,  completions:1,  hours:0.8,  required:1  },
+      'Data Management':                                        { learners:1,  completions:1,  hours:0.3,  required:1  },
+      'Security Engineering':                                   { learners:1,  completions:1,  hours:1.4,  required:1  }
+    },
+
+    // Skills — source: PPL Skills (Detailed by User) 04/20
+    topSkills: [
+      { name:'Agile Development',          count:9 },
+      { name:'Software Testing',           count:7 },
+      { name:'Software Development',       count:7 },
+      { name:'Learning Management',        count:5 },
+      { name:'Software Architecture',      count:5 },
+      { name:'Microsoft Excel',            count:4 },
+      { name:'Product Lifecycle Mgmt',     count:4 },
+      { name:'Risk Management',            count:4 },
+      { name:'Scrum',                      count:4 },
+      { name:'Artificial Intelligence',    count:4 },
+      { name:'Change Management',          count:4 },
+      { name:'Business Analysis',          count:3 },
+      { name:'Program Evaluation',         count:3 },
+      { name:'Agile',                      count:3 },
+      { name:'Cloud Computing',            count:3 }
+    ],
+    skillsLearners: 45,
+    skillsUnique: 170,
+
+    // Search — source: PPL Search (Summary) 04/20
+    searchTerms: [
+      { term:'Agile Fundamentals',              count:3, type:'professional' },
+      { term:'Automation',                      count:1, type:'professional' },
+      { term:'Business Solutions Strategy',     count:1, type:'professional' },
+      { term:'Managing Stakeholder Relationships',count:1,type:'professional'},
+      { term:'Instructional Design',            count:1, type:'professional' },
+      { term:'Certification',                   count:1, type:'professional' },
+      { term:'Agile Methodology',               count:1, type:'professional' },
+      { term:'Design',                          count:1, type:'professional' },
+      { term:'TQ',                              count:1, type:'platform'     },
+      { term:'Udacity',                         count:1, type:'platform'     },
+      { term:'Degreed',                         count:1, type:'platform'     },
+      { term:'Sandbox',                         count:1, type:'other'        },
+      { term:'Adult Education',                 count:1, type:'other'        },
+      { term:'Speaking',                        count:1, type:'other'        },
+      { term:'Knitting',                        count:1, type:'off-topic'    },
+      { term:'Hand Knitting',                   count:1, type:'off-topic'    },
+      { term:'Cooking',                         count:1, type:'off-topic'    },
+      { term:'Marathon',                        count:1, type:'off-topic'    },
+      { term:'Sewing',                          count:1, type:'off-topic'    }
+    ]
   },
 
   // Placeholders — wire in when data is available
@@ -1036,63 +1192,96 @@ function applyCustom() {
 // ── KPI tile data per platform ──────────────────────────────
 const KPI_DATA = {
   both: [
-    { label:'Total Enrolled',      value:'427',   sub:'TQ platform learners',          pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
-    { label:'Active (7-Day)',       value:'15',    sub:'of 427 learners · 3.5%',        pill:'Low activation rate',      pillClass:'pill-warn'  },
-    { label:'Program Completions',  value:'840',   sub:'across all TQ programs',         pill:'85.5% completion rate',    pillClass:'pill-green' },
-    { label:'Total Learning Hours', value:'892',   sub:'TQ 845h + Degreed 47h',          pill:'Avg 2.1h / learner',       pillClass:'pill-green' },
-    { label:'Degreed Completions',  value:'88',    sub:'by 23 unique learners',          pill:'↑ March 2026 surge',       pillClass:'pill-green' }
+    { label:'Total Enrolled',      value:'427',   sub:'TQ platform learners',           pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
+    { label:'Active (7-Day)',       value:'15',    sub:'of 427 learners · 3.5%',         pill:'Low activation rate',      pillClass:'pill-warn'  },
+    { label:'Program Completions',  value:'840',   sub:'across all TQ programs',          pill:'85.5% completion rate',    pillClass:'pill-green' },
+    { label:'Total Learning Hours', value:'929',   sub:'TQ 845h + Degreed 84h',           pill:'Avg 2.2h / learner',       pillClass:'pill-green' },
+    { label:'Degreed Completions',  value:'123',   sub:'by 27 unique learners',           pill:'↑ Feb–Apr 2026',           pillClass:'pill-green' }
   ],
   tq: [
-    { label:'Total Enrolled',       value:'427',   sub:'TQ platform learners',           pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
-    { label:'Active (7-Day)',        value:'15',    sub:'of 427 learners · 3.5%',         pill:'Low activation rate',      pillClass:'pill-warn'  },
-    { label:'Program Completions',   value:'840',   sub:'across all TQ programs',          pill:'85.5% completion rate',    pillClass:'pill-green' },
-    { label:'Total Learning Hours',  value:'845',   sub:'TQ platform hours',               pill:'Avg 1.98h / learner',      pillClass:'pill-green' },
-    { label:'Avg Concept Completion',value:'88.4%', sub:'per enrollment record',           pill:'TQ Roster data',           pillClass:'pill-green' }
+    { label:'Total Enrolled',       value:'427',   sub:'TQ platform learners',            pill:'↑ +10 since Mar 9',        pillClass:'pill-green' },
+    { label:'Active (7-Day)',        value:'15',    sub:'of 427 learners · 3.5%',          pill:'Low activation rate',      pillClass:'pill-warn'  },
+    { label:'Program Completions',   value:'840',   sub:'across all TQ programs',           pill:'85.5% completion rate',    pillClass:'pill-green' },
+    { label:'Total Learning Hours',  value:'845',   sub:'TQ platform hours',                pill:'Avg 1.98h / learner',      pillClass:'pill-green' },
+    { label:'Avg Concept Completion',value:'88.4%', sub:'per enrollment record',            pill:'TQ Roster data',           pillClass:'pill-green' }
   ],
   degreed: [
-    { label:'Unique Learners',       value:'23',    sub:'Degreed unique learners',         pill:'March 2026 data',          pillClass:'pill-green' },
-    { label:'Content Completions',   value:'88',    sub:'across all content types',        pill:'Courses, Articles, Videos',pillClass:'pill-green' },
-    { label:'Course Completions',    value:'39',    sub:'of 88 Degreed completions',       pill:'44% of all content',       pillClass:'pill-green' },
-    { label:'Total Learning Hours',  value:'47',    sub:'Degreed estimated hours',         pill:'Avg 2.0h / learner',       pillClass:'pill-green' },
-    { label:'Verified Completions',  value:'29',    sub:'of 88 completions · 33%',         pill:'59 unverified remaining',  pillClass:'pill-warn'  }
+    { label:'Unique Learners',       value:'27',    sub:'Degreed unique learners',          pill:'Feb–Apr 2026 data',         pillClass:'pill-green' },
+    { label:'Content Completions',   value:'123',   sub:'across all content types',         pill:'Courses, Articles, Videos', pillClass:'pill-green' },
+    { label:'Course Completions',    value:'67',    sub:'of 123 Degreed completions',       pill:'54% of all content',        pillClass:'pill-green' },
+    { label:'Total Learning Hours',  value:'84',    sub:'Degreed estimated hours',          pill:'Avg 3.1h / learner',        pillClass:'pill-green' },
+    { label:'Verified Completions',  value:'58',    sub:'of 123 completions · 47%',         pill:'65 unverified remaining',   pillClass:'pill-warn'  }
   ]
 };
 
-function updateKPITiles(p) {
-  const tiles = KPI_DATA[p] || KPI_DATA.both;
+// Track active platform so pathway filter can restore it
+let activePlatform = 'both';
+
+function updateKPITiles(platform, pathway) {
+  let tiles;
+  if (pathway && pathway !== 'all') {
+    const s = DATA.degreed.pathwayStats[pathway] || { learners:0, completions:0, hours:0, required:0 };
+    const avgH = s.learners > 0 ? (s.hours / s.learners).toFixed(1) : '0';
+    tiles = [
+      { label:'Pathway Learners',     value:String(s.learners),        sub:'active in this pathway',            pill:'Degreed data',                   pillClass:'pill-green' },
+      { label:'Content Completions',  value:String(s.completions),     sub:'pathway content completed',         pill:s.required + ' required items',   pillClass:'pill-green' },
+      { label:'Required Completions', value:String(s.required),        sub:'of ' + s.completions + ' total',   pill:s.required === s.completions ? 'All required' : 'Incl. optional', pillClass:'pill-green' },
+      { label:'Learning Hours',       value:s.hours.toFixed(1) + 'h', sub:'estimated in pathway',              pill:'Avg ' + avgH + 'h / learner',    pillClass:'pill-green' },
+      { label:'TQ Data',              value:'N/A',                     sub:'TQ hidden — pathway filter active', pill:'Degreed only',                   pillClass:'pill-warn'  }
+    ];
+  } else {
+    tiles = KPI_DATA[platform] || KPI_DATA.both;
+  }
   tiles.forEach((t, i) => {
     const n = i + 1;
     document.getElementById('kpi' + n + '-label').textContent = t.label;
     document.getElementById('kpi' + n + '-value').textContent = t.value;
     document.getElementById('kpi' + n + '-sub').textContent   = t.sub;
     const pill = document.getElementById('kpi' + n + '-pill');
-    pill.textContent  = t.pill;
-    pill.className    = 'kpi-pill ' + t.pillClass;
+    pill.textContent = t.pill;
+    pill.className   = 'kpi-pill ' + t.pillClass;
   });
 }
 
-function setPlatform(p, btn) {
-  document.querySelectorAll('#platformBar .preset-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  // Update summary tiles
-  updateKPITiles(p);
-  // Show/hide chart cards
+function applyCardVisibility(platform, pathway) {
   const section = document.getElementById('p1Section');
+  const forceDegreeed = pathway && pathway !== 'all';
   section.querySelectorAll('.chart-card[data-platform]').forEach(card => {
     const cp = card.dataset.platform;
-    card.style.display = (p === 'both' || cp === p) ? '' : 'none';
+    if (forceDegreeed) {
+      card.style.display = cp === 'degreed' ? '' : 'none';
+    } else {
+      card.style.display = (platform === 'both' || cp === platform) ? '' : 'none';
+    }
   });
-  // Resize visible charts so canvas fills new layout
-  setTimeout(() => {
-    Object.values(Chart.instances).forEach(ch => ch.resize());
-  }, 50);
+  setTimeout(() => Object.values(Chart.instances).forEach(ch => ch.resize()), 50);
+}
+
+function setPlatform(p, btn) {
+  activePlatform = p;
+  document.querySelectorAll('#platformBar .preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateKPITiles(p, activePathwayName === 'all' ? null : activePathwayName);
+  applyCardVisibility(p, activePathwayName === 'all' ? null : activePathwayName);
+}
+
+let activePathwayName = 'all';
+function setPathway(p, btn) {
+  activePathwayName = p;
+  document.querySelectorAll('#pathwayBar .pathway-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update TQ note
+  const note = document.getElementById('pathwayTqNote');
+  if (note) note.textContent = p !== 'all' ? '· TQ data hidden when a pathway is selected' : '';
+  updateKPITiles(activePlatform, p === 'all' ? null : p);
+  applyCardVisibility(activePlatform, p === 'all' ? null : p);
 }
 
 const SOURCE_DATES = {
   tqLearner:  'Apr 3, 2026',
   tqRoster:   'Mar 9, 2026',
   tqBoth:     'Apr 3, 2026',
-  degreedComp:'Apr 1, 2026'
+  degreedComp:'Apr 20, 2026'
 };
 
 function stampAllCards() {
@@ -1726,6 +1915,108 @@ function refreshTimeCharts() {
   buildComboChart();
 }
 
+// ── Skills Engagement — horizontal bar, top 15 ──
+function buildSkillsChart() {
+  const skills = DATA.degreed.topSkills;
+  const ctx = getCtx('skillsChart');
+  CHARTS.skills = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: skills.map(s => s.name).reverse(),
+      datasets: [{
+        data: skills.map(s => s.count).reverse(),
+        backgroundColor: skills.map((_, i) => {
+          const palette = [C.teal,C.cyan,C.blueMid,C.blue,C.green,C.mint,C.greenLight,C.teal,C.cyan,C.blueMid,C.blue,C.green,C.mint,C.greenLight,C.teal];
+          return palette[i % palette.length];
+        }).reverse(),
+        borderRadius: 4,
+        barThickness: 16
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.parsed.x} learner${c.parsed.x !== 1 ? 's' : ''} following` } }
+      },
+      scales: {
+        x: { grid: { color:'rgba(0,0,0,0.05)' }, ticks: { color:C.steel, font:{size:11} }, title: { display:true, text:'Learners Following', color:C.steel, font:{size:11} } },
+        y: { grid: { display:false }, ticks: { color:C.navy, font:{size:11} } }
+      }
+    }
+  });
+}
+
+// ── Pathway Activity — grouped bar: learners + completions ──
+function buildPathwayProgressChart() {
+  const stats = DATA.degreed.pathwayStats;
+  const labels = Object.keys(stats);
+  const learners = labels.map(p => stats[p].learners);
+  const completions = labels.map(p => stats[p].completions);
+  const ctx = getCtx('pathwayProgressChart');
+  CHARTS.pathwayProgress = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => l.length > 30 ? l.slice(0,28) + '…' : l),
+      datasets: [
+        { label:'Unique Learners', data:learners,    backgroundColor:C.teal,    borderRadius:3, barThickness:12 },
+        { label:'Content Completions', data:completions, backgroundColor:C.cyan, borderRadius:3, barThickness:12 }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'top', labels:{ color:C.navy, font:{size:11}, boxWidth:12 } },
+        tooltip: { mode:'index', intersect:false }
+      },
+      scales: {
+        x: { grid:{ color:'rgba(0,0,0,0.05)' }, ticks:{ color:C.steel, font:{size:11} } },
+        y: { grid:{ display:false }, ticks:{ color:C.navy, font:{size:11} } }
+      }
+    }
+  });
+}
+
+// ── Search Behaviour — rendered as a categorised list ──
+function buildSearchList() {
+  const el = document.getElementById('searchList');
+  if (!el) return;
+  const terms = DATA.degreed.searchTerms;
+  const typeLabels = { professional:'Work-Related', platform:'Platform', other:'Other', 'off-topic':'Off-Topic' };
+  const typeColors = { professional:C.teal, platform:C.blueMid, other:C.steel, 'off-topic':'#B0BEC5' };
+  const grouped = {};
+  terms.forEach(t => { (grouped[t.type] = grouped[t.type] || []).push(t); });
+
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;padding:6px 2px 12px;">';
+  // insight callout
+  html += `<div style="width:100%;padding:10px 14px;background:#EAF8F5;border-left:4px solid ${C.teal};border-radius:6px;font-size:12px;color:${C.navy};margin-bottom:4px;">
+    <strong>Low search volume observed.</strong> Only 21 searches recorded across the reporting window, with most terms appearing once.
+    Work-related searches (Agile, Automation, Business Strategy) suggest intentional skill-building.
+    Off-topic searches (knitting, cooking) indicate some users are exploring the platform broadly — expected in early adoption.
+  </div>`;
+  ['professional','platform','other','off-topic'].forEach(type => {
+    if (!grouped[type]) return;
+    const color = typeColors[type];
+    const label = typeLabels[type];
+    html += `<div style="flex:1;min-width:180px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:${color};margin-bottom:6px;">${label}</div>`;
+    grouped[type].forEach(t => {
+      const bar = Math.round((t.count / 3) * 60);
+      html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <div style="flex:1;font-size:12px;color:#0D2545;">${t.term}</div>
+        <div style="width:${Math.max(bar,8)}px;height:8px;background:${color};border-radius:4px;opacity:0.75;"></div>
+        <div style="font-size:11px;color:#5A7490;width:16px;text-align:right;">${t.count}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
 // ============================================================
 //  INIT ALL
 // ============================================================
@@ -1750,6 +2041,10 @@ function initAll() {
   buildP3ProdChart();
   buildP3TalentChart();
   buildP3IndirectChart();
+  // Degreed Insights — skills, pathway progress, search
+  buildSkillsChart();
+  buildPathwayProgressChart();
+  buildSearchList();
   // KPI Matrix — drag-and-drop widget
   initMatrix();
   // Stamps + platform filter
