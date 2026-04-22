@@ -426,15 +426,26 @@
 <div class="pathway-bar" id="pathwayBar">
   <label>Pathway:</label>
   <button class="pathway-btn active" onclick="setPathway('all',this)">All Pathways</button>
-  <button class="pathway-btn" onclick="setPathway('AI Solutions',this)">AI Solutions</button>
-  <button class="pathway-btn" onclick="setPathway('AI Essentials: Understand Artificial Intelligence at Work',this)">AI Essentials</button>
-  <button class="pathway-btn" onclick="setPathway('Agile &amp; SAFe Fundamentals',this)">Agile &amp; SAFe</button>
+  <button class="pathway-btn" onclick="setPathway('Design Thinking',this)">Design Thinking</button>
   <button class="pathway-btn" onclick="setPathway('Lean Delivery',this)">Lean Delivery</button>
-  <button class="pathway-btn" onclick="setPathway('Enterprise Data &amp; AI-ML Strategy',this)">Enterprise Data &amp; AI</button>
+  <button class="pathway-btn" onclick="setPathway('Agile &amp; SAFe Fundamentals',this)">Agile &amp; SAFe</button>
+  <button class="pathway-btn" onclick="setPathway('Business Solutions Strategy',this)">Business Solutions</button>
+  <button class="pathway-btn" onclick="setPathway('Technology Strategy',this)">Technology Strategy</button>
   <button class="pathway-btn" onclick="setPathway('Technology Architecture',this)">Tech Architecture</button>
+  <button class="pathway-btn" onclick="setPathway('Technology Operations',this)">Tech Operations</button>
+  <button class="pathway-btn" onclick="setPathway('Data Modeling',this)">Data Modeling</button>
   <button class="pathway-btn" onclick="setPathway('Data &amp; Information Architecture',this)">Data Architecture</button>
   <button class="pathway-btn" onclick="setPathway('Data Management',this)">Data Management</button>
+  <button class="pathway-btn" onclick="setPathway('Analytics &amp; Insights',this)">Analytics &amp; Insights</button>
+  <button class="pathway-btn" onclick="setPathway('Data Storytelling',this)">Data Storytelling</button>
+  <button class="pathway-btn" onclick="setPathway('AI Solutions',this)">AI Solutions</button>
+  <button class="pathway-btn" onclick="setPathway('Enterprise Data &amp; AI-ML Strategy',this)">Enterprise Data &amp; AI</button>
+  <button class="pathway-btn" onclick="setPathway('Data &amp; AI Governance',this)">Data &amp; AI Governance</button>
+  <button class="pathway-btn" onclick="setPathway('AI Enabled CI-CD &amp; Testing',this)">AI Enabled CI/CD</button>
   <button class="pathway-btn" onclick="setPathway('Security Engineering',this)">Security Engineering</button>
+  <button class="pathway-btn" onclick="setPathway('Security Intelligence &amp; Operations',this)">Security Intelligence</button>
+  <button class="pathway-btn" onclick="setPathway('Security Compliance',this)">Security Compliance</button>
+  <button class="pathway-btn" onclick="setPathway('Governance &amp; Risk Management',this)">Governance &amp; Risk</button>
   <span class="pathway-tq-note" id="pathwayTqNote"></span>
 </div>
 
@@ -1084,7 +1095,6 @@ const DATA = {
     // Pathway filter data — source: PPL Pathway (Detailed by User) 04/20
     pathwayLearners: {
       'AI Solutions':                                            ['RWPierfy@pplweb.com','ATCronin@pplweb.com','DHKirschman@pplweb.com','JDBurdett@pplweb.com','ELDo@pplweb.com','TDDierksheide@pplweb.com','PLIsgrigg@pplweb.com','RPeesa@pplweb.com'],
-      'AI Essentials: Understand Artificial Intelligence at Work':['GSnyder@pplweb.com','EJohnson1@pplweb.com','JDvalori@pplweb.com'],
       'Agile & SAFe Fundamentals':                              ['JDvalori@pplweb.com','HVDang@pplweb.com','JGrumbein@pplweb.com'],
       'Lean Delivery':                                          ['JDvalori@pplweb.com'],
       'Enterprise Data & AI-ML Strategy':                       ['RPeesa@pplweb.com'],
@@ -1095,7 +1105,6 @@ const DATA = {
     },
     pathwayStats: {
       'AI Solutions':                                            { learners:8,  completions:21, hours:14.8, required:21 },
-      'AI Essentials: Understand Artificial Intelligence at Work':{ learners:3,  completions:39, hours:3.2,  required:23 },
       'Agile & SAFe Fundamentals':                              { learners:3,  completions:13, hours:15.8, required:13 },
       'Lean Delivery':                                          { learners:1,  completions:2,  hours:3.5,  required:2  },
       'Enterprise Data & AI-ML Strategy':                       { learners:1,  completions:1,  hours:0.3,  required:1  },
